@@ -11,6 +11,11 @@ class DinosaurFactory
         return $this->createDinosaur('Velociraptor', true, $length);
     }
 
+    public function growFromSpecification(string $spec): Dinosaur
+    {
+
+    }
+
     private function createDinosaur(string $genus, bool $isCarnivorous, int $length)
     {
         $dinosaur = new Dinosaur($genus, $isCarnivorous);
