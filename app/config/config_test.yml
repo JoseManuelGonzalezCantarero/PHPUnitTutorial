@@ -14,3 +14,7 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+services:
+    _defaults:
+        public: true
+    test.AppBundle\Service\EnclosureBuilderService: '@AppBundle\Service\EnclosureBuilderService'
