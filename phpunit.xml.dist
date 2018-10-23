@@ -18,6 +18,12 @@
         </testsuite>
     </testsuites>
 
+    <testsuites>
+        <testsuite name="entities">
+            <directory>tests/*Bundle/Entity</directory>
+        </testsuite>
+    </testsuites>
+
     <filter>
         <whitelist>
             <directory>src</directory>
