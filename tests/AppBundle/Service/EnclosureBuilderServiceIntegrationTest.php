@@ -5,6 +5,7 @@ namespace Tests\AppBundle\Service;
 use AppBundle\Entity\Dinosaur;
 use AppBundle\Entity\Enclosure;
 use AppBundle\Entity\Security;
+use AppBundle\Factory\DinosaurFactory;
 use AppBundle\Service\EnclosureBuilderService;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -24,11 +25,21 @@ class EnclosureBuilderServiceIntegrationTest extends KernelTestCase
 
     public function testItBuildsEnclosureWithDefaultSpecifications()
     {
+        $dinoFactory = $this->createMock(DinosaurFactory::class);
+
+        $dinoFactory->expects($this->any())
+            ->method('growFromSpecification')
+            ->willReturnCallback(function($spec){
+                return new Dinosaur();
+            });
+
         /**
          * @var EnclosureBuilderService $enclosureBuilderService
          */
-        $enclosureBuilderService = self::$kernel->getContainer()
-            ->get('test.'.EnclosureBuilderService::class);
+        $enclosureBuilderService = new EnclosureBuilderService(
+            $this->getEntityManager(),
+            $dinoFactory
+        );
 
         $enclosureBuilderService->buildEnclosure();
 
