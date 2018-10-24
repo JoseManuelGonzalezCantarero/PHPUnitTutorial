@@ -3,16 +3,27 @@
 namespace Tests\AppBundle\Service;
 
 use AppBundle\Entity\Dinosaur;
+use AppBundle\Entity\Enclosure;
 use AppBundle\Entity\Security;
 use AppBundle\Service\EnclosureBuilderService;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class EnclosureBuilderServiceIntegrationTest extends KernelTestCase
 {
-    public function testItBuildsEnclosureWithDefaultSpecifications()
+    public function setUp()
     {
         self::bootKernel();
 
+        $this->truncateEntities([
+            Enclosure::class,
+            Security::class,
+            Dinosaur::class
+        ]);
+    }
+
+    public function testItBuildsEnclosureWithDefaultSpecifications()
+    {
         /**
          * @var EnclosureBuilderService $enclosureBuilderService
          */
@@ -24,9 +35,7 @@ class EnclosureBuilderServiceIntegrationTest extends KernelTestCase
         /**
          * @var \Doctrine\ORM\EntityManager $em
          */
-        $em = self::$kernel->getContainer()
-            ->get('doctrine')
-            ->getManager();
+        $em = $this->getEntityManager();
 
         $count = (int)$em->getRepository(Security::class)
             ->createQueryBuilder('s')
@@ -43,5 +52,21 @@ class EnclosureBuilderServiceIntegrationTest extends KernelTestCase
                          ->getSingleScalarResult();
 
         $this->assertSame(3, $count, 'Amount of dinosaurs is not the same');
+    }
+
+    private function truncateEntities()
+    {
+        $purger = new ORMPurger($this->getEntityManager());
+        $purger->purge();
+    }
+
+    /**
+     * @return \Doctrine\ORM\EntityManager
+     */
+    private function getEntityManager()
+    {
+        return self::$kernel->getContainer()
+                            ->get('doctrine')
+                            ->getManager();
     }
 }
